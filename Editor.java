@@ -59,7 +59,7 @@ class Editor extends JFrame implements ActionListener {
         });
         
         lineNumber = new LineNumber();
-        f.add(lineNumber, BorderLayout.WEST);
+        // f.add(lineNumber, BorderLayout.WEST);
 
         // Create a menubar
         JMenuBar mb = new JMenuBar();
@@ -109,7 +109,12 @@ class Editor extends JFrame implements ActionListener {
         mb.add(m2);
         mb.add(mc);
 
-        scrollPane = new JScrollPane(t);
+        JPanel contentPanel = new JPanel();
+        contentPanel.setLayout(new BorderLayout());
+        contentPanel.add(lineNumber, BorderLayout.WEST);
+        contentPanel.add(t, BorderLayout.CENTER);
+
+        scrollPane = new JScrollPane(contentPanel);
         scrollPane.setPreferredSize(new Dimension(450, 450));
         scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
