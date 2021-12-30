@@ -1,8 +1,12 @@
+import javax.lang.model.util.ElementScanner6;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
 public class Login extends JFrame {
+    String username;
+    String password;
+
     public Login() {
         this.setTitle("Login");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -23,8 +27,28 @@ public class Login extends JFrame {
 
         JButton loginButton = new JButton("Login");
         loginButton.addActionListener(e -> {
-            System.out.println(usernameField.getText());
-            System.out.println(passwordField.getPassword());
+            try {
+                username = usernameField.getText();
+                password = new String(passwordField.getPassword());
+                
+                Client c = new Client(username,password);
+
+                if(c.validClient() == 1){
+                    System.out.println("VALID USER!");
+                }
+                else if(c.validClient() == 2){
+                    System.out.println("INVALID USERNAME/PASSWORD!");
+                    //throw an editor
+                    c.connectServer();
+                }
+                else {
+                    System.out.println("USER DOESN'T EXIST!");
+                    //ask for client choice to register
+                }
+            }
+            catch(Exception exp) {
+                exp.printStackTrace();
+            }
         });
         
         JPanel mainPanel = new JPanel();
