@@ -6,11 +6,11 @@ Detects the change in content of the current client's editor
 and notifies change to the server
 */
 
-public class CollaborateWriter extends Thread{
+public class ClientWriter extends Thread{
     Client client;
     Socket socket;
 
-    public CollaborateWriter(Client client, Socket socket){
+    public ClientWriter(Client client, Socket socket){
         this.client = client;
         this.socket = socket;
     }

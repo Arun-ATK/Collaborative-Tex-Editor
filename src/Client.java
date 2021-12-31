@@ -72,7 +72,9 @@ public class Client implements Serializable {
     public void throwEditor(Socket socket){
         //throw new editor
         this.clientEditor = new Editor();
-        CollaborateWriter cw =new CollaborateWriter(this, socket);
+        ClientWriter cw =new ClientWriter(this, socket);
         cw.start();
+        ClientReader cr = new ClientReader(this, socket);
+        cr.start();
     }
 }

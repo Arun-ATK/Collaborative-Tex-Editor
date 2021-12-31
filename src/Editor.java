@@ -263,6 +263,10 @@ class Editor extends JFrame implements ActionListener {
         return t.getText();
     }
 
+    public void setContent(String content){
+        t.setText(content);
+    }
+
     // Main class
     public static void main(String[] args) {
         new Editor();
