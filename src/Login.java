@@ -35,11 +35,11 @@ public class Login extends JFrame {
 
                 if(c.validClient() == 1){
                     System.out.println("VALID USER!");
+                    //throw an editor
+                    c.connectServer();
                 }
                 else if(c.validClient() == 2){
                     System.out.println("INVALID USERNAME/PASSWORD!");
-                    //throw an editor
-                    c.connectServer();
                 }
                 else {
                     System.out.println("USER DOESN'T EXIST!");

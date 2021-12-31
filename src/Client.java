@@ -1,6 +1,10 @@
+import java.io.*;
+import java.net.*;
+
 public class Client {
     private String username;
     private String password;
+    Editor clientEditor;
 
     public Client(String username,String password){
         this.username = username;
@@ -17,7 +21,7 @@ public class Client {
         return password;
     }
 
-    public boolean registerClient(){
+    public int registerClient(){
         try{
             //TO DO register in Database
         }
@@ -39,6 +43,21 @@ public class Client {
     }
 
     public void connectServer(){
-        
+        try {
+            Socket s = new Socket("localhost",3068);
+            DataInputStream dis = new DataInputStream(s.getInputStream());
+
+            String response = (String)dis.readUTF();
+
+            if(response.equals("connect")){
+                this.clientEditor = new Editor();
+            }
+            else {
+                System.out.println("Server denied Access!");
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
     }
 }
