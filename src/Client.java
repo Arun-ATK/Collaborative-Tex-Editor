@@ -1,16 +1,19 @@
 import java.io.*;
 import java.net.*;
 
-public class Client {
+public class Client implements Serializable {
+
+    private static final long serialVersionUID = 1L;
+
     private String username;
     private String password;
-    Editor clientEditor;
+    private Editor clientEditor;
 
     public Client(String username,String password){
         this.username = username;
         this.password = password;
-        System.out.println(username);
-        System.out.println(password);
+        System.out.println("[+] " + username);
+        System.out.println("[+] " + password);
     }
 
     public String getUserName(){
@@ -42,22 +45,34 @@ public class Client {
         //invalid username and password -> return 3
     }
 
-    public void connectServer(){
+    public Editor getClientEditor(){
+        return this.clientEditor;
+    }
+
+    public boolean connectServer(Socket socket){
         try {
-            Socket s = new Socket("localhost",3068);
-            DataInputStream dis = new DataInputStream(s.getInputStream());
+            ObjectOutputStream dos = new ObjectOutputStream(socket.getOutputStream());
+            ObjectInputStream ios = new ObjectInputStream(socket.getInputStream());
 
-            String response = (String)dis.readUTF();
+            dos.writeObject(this);
 
-            if(response.equals("connect")){
-                this.clientEditor = new Editor();
+            if(ios.readObject() != null){
+                return true;
             }
-            else {
-                System.out.println("Server denied Access!");
+            else{
+                return false;
             }
         }
         catch(Exception e){
             e.printStackTrace();
         }
+        return false;
+    }
+
+    public void throwEditor(Socket socket){
+        //throw new editor
+        this.clientEditor = new Editor();
+        CollaborateWriter cw =new CollaborateWriter(this, socket);
+        cw.start();
     }
 }

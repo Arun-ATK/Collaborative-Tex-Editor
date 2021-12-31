@@ -2,6 +2,7 @@ import javax.lang.model.util.ElementScanner6;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.*;
 
 public class Login extends JFrame {
     String username;
@@ -32,18 +33,17 @@ public class Login extends JFrame {
                 password = new String(passwordField.getPassword());
                 
                 Client c = new Client(username,password);
+                
+                //opening the socket connection here
+                Socket socket = new Socket("localhost",3068);
 
-                if(c.validClient() == 1){
-                    System.out.println("VALID USER!");
-                    //throw an editor
-                    c.connectServer();
+                if(c.connectServer(socket)){
+                    //throw a editor
+                    System.out.println("Server accepted request!");
+                    c.throwEditor(socket);
                 }
-                else if(c.validClient() == 2){
-                    System.out.println("INVALID USERNAME/PASSWORD!");
-                }
-                else {
-                    System.out.println("USER DOESN'T EXIST!");
-                    //ask for client choice to register
+                else{
+                    System.out.println("Server refused!");
                 }
             }
             catch(Exception exp) {
