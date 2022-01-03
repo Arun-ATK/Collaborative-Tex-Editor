@@ -8,6 +8,7 @@ public class Client implements Serializable {
     private String username;
     private String password;
     private Editor clientEditor;
+    private boolean lock = false;
 
     public Client(String username,String password){
         this.username = username;
@@ -47,6 +48,18 @@ public class Client implements Serializable {
 
     public Editor getClientEditor(){
         return this.clientEditor;
+    }
+
+    public void Lock(){
+        this.lock = true;
+    }
+
+    public void Unlock(){
+        this.lock = false;
+    }
+
+    public boolean getLock(){
+        return this.lock;
     }
 
     public boolean connectServer(Socket socket){

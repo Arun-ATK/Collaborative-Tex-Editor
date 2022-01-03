@@ -1,5 +1,4 @@
 import java.io.*;
-import java.util.*;
 import java.net.*;
 
 /*
@@ -19,11 +18,24 @@ public class ClientReader extends Thread {
     public void run(){
         try{
             DataInputStream dis = new DataInputStream(this.socket.getInputStream());
-            
+
             while(true) {
                 String content = (String)dis.readUTF();
-                System.out.println(content);
+
+                if(this.client.getLock()){
+                    Thread.sleep(100);
+                    continue;
+                }
+
+                if(content == null)
+                    content = "";
+
+
+                //System.out.println(content);
+                
                 this.client.getClientEditor().setContent(content);
+                this.client.getClientEditor().setCursorToEndOfText();
+                
             }
         }
         catch(Exception exp){

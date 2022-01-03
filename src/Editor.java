@@ -267,6 +267,10 @@ class Editor extends JFrame implements ActionListener {
         t.setText(content);
     }
 
+    public void setCursorToEndOfText(){
+        t.setCaretPosition(getContent().length());
+    }
+
     // Main class
     public static void main(String[] args) {
         new Editor();

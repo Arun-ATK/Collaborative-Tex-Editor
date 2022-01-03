@@ -15,24 +15,29 @@ public class ServerListener extends Thread {
     public void run(){
         try{
             DataInputStream dis = new DataInputStream(this.thisClient.getInputStream());
+            String prev1 = "",prev2 = "";
 
             while(true) {
                 String content = (String)dis.readUTF();
-                System.out.println("{" + content + "}");
+                if(prev2.equals(content))
+                    continue;
+
+                //System.out.println("{" + content + "}");
 
                 while(mutex) {}
                 mutex = true;
-
+                
                 //use write to send the content to all the other clients
 
                 for(HashMap.Entry<Socket,Client> m : thisSession.entrySet()){
-                    if(m.getKey().equals(this.thisClient) == false){
+                    if(m.getKey() != this.thisClient){
                         DataOutputStream dos = new DataOutputStream(m.getKey().getOutputStream());
                         dos.writeUTF(content);
                     }
                 }
-
                 mutex = false;
+                prev2 = prev1;
+                prev1 = content;
             }
         }
         catch(Exception ex){
