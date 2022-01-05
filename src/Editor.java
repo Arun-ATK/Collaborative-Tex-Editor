@@ -6,7 +6,7 @@ import java.awt.event.*;
 
 class Editor extends JFrame implements ActionListener {
     // Text component
-    JTextArea t;
+    JTextArea textArea;
     LineNumber lineNumber;
 
     int numberOfLines = 1;
@@ -29,33 +29,75 @@ class Editor extends JFrame implements ActionListener {
         f.setLocationRelativeTo(null);
 
         // Text component
-        t = new JTextArea();
-        t.setLineWrap(true);
-        t.setWrapStyleWord(true);
-        t.setFont(new Font("Arial", Font.PLAIN, 20));
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
+        textArea.setFont(new Font("Arial", Font.PLAIN, 20));
 
-        t.addKeyListener(new KeyAdapter() {
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+
             @Override
-            public void keyTyped(KeyEvent e) {
-                if (e.getKeyChar() == '\n') {
-                    lineNumber.addNewLine();
-                    numberOfLines++;
-                }
-                else if (e.getKeyChar() == '\b') {
-                    int numLines = 1;
-                    String cur = t.getText();
-                    for (int i = 0; i < cur.length(); i++) {
-                        if (cur.charAt(i) == '\n') {
-                            numLines++;
-                        }
+            public void insertUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                String content = textArea.getText();
+                int num = 1;
+                for (int i = 0; i < content.length(); ++i) {
+                    if (content.charAt(i) == '\n') {
+                        num++;
                     }
+                }
 
-                    for (int i = numLines; i < numberOfLines; i++) {
+                int diff = num - numberOfLines;
+                if (diff < 0) {
+                    diff *= -1;
+
+                    for (int i = 0; i < diff; ++i) {
                         lineNumber.removeLine();
                     }
-                    numberOfLines = numLines;
                 }
+                else if (diff > 0) {
+                    for (int i = 0; i < diff; ++i) {
+                        lineNumber.addNewLine();
+                    }
+                }
+
+                numberOfLines = num;
             }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                String content = textArea.getText();
+                int num = 1;
+                for (int i = 0; i < content.length(); ++i) {
+                    if (content.charAt(i) == '\n') {
+                        num++;
+                    }
+                }
+
+                int diff = num - numberOfLines;
+                if (diff < 0) {
+                    diff *= -1;
+
+                    for (int i = 0; i < diff; ++i) {
+                        lineNumber.removeLine();
+                    }
+                }
+                else if (diff > 0) {
+                    for (int i = 0; i < diff; ++i) {
+                        lineNumber.addNewLine();
+                    }
+                }
+
+                numberOfLines = num;
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+
         });
         
         lineNumber = new LineNumber();
@@ -109,10 +151,32 @@ class Editor extends JFrame implements ActionListener {
         mb.add(m2);
         mb.add(mc);
 
+        textArea.getDocument().addDocumentListener(new DocumentListener() {
+
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                // TODO Auto-generated method stub
+                
+            }
+
+        });
+
         JPanel contentPanel = new JPanel();
         contentPanel.setLayout(new BorderLayout());
         contentPanel.add(lineNumber, BorderLayout.WEST);
-        contentPanel.add(t, BorderLayout.CENTER);
+        contentPanel.add(textArea, BorderLayout.CENTER);
 
         scrollPane = new JScrollPane(contentPanel);
         scrollPane.setPreferredSize(new Dimension(450, 450));
@@ -127,7 +191,7 @@ class Editor extends JFrame implements ActionListener {
         fontSizeSpinner.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                t.setFont(new Font(t.getFont().getFamily(), Font.PLAIN, (int) fontSizeSpinner.getValue()));
+                textArea.setFont(new Font(textArea.getFont().getFamily(), Font.PLAIN, (int) fontSizeSpinner.getValue()));
             }
         });
 
@@ -161,20 +225,20 @@ class Editor extends JFrame implements ActionListener {
         if (e.getSource() == fontColorButton) {
             Color color = JColorChooser.showDialog(null, "Choose a color", Color.black);
 
-            t.setForeground(color);
+            textArea.setForeground(color);
         }
 
         if (e.getSource() == fontBox) {
-            t.setFont(new Font((String) fontBox.getSelectedItem(), Font.PLAIN, t.getFont().getSize()));
+            textArea.setFont(new Font((String) fontBox.getSelectedItem(), Font.PLAIN, textArea.getFont().getSize()));
         }
 
         if (s.equals("cut")) {
             // TO DO, design our own editing functions
-            t.cut();
+            textArea.cut();
         } else if (s.equals("copy")) {
-            t.copy();
+            textArea.copy();
         } else if (s.equals("paste")) {
-            t.paste();
+            textArea.paste();
         } else if (s.equals("Save")) {
             // Create an object of JFileChooser class
             JFileChooser j = new JFileChooser();
@@ -195,7 +259,7 @@ class Editor extends JFrame implements ActionListener {
                     BufferedWriter w = new BufferedWriter(wr);
 
                     // Write
-                    w.write(t.getText());
+                    w.write(textArea.getText());
 
                     w.flush();
                     w.close();
@@ -209,7 +273,7 @@ class Editor extends JFrame implements ActionListener {
         } else if (s.equals("Print")) {
             try {
                 // print the file
-                t.print();
+                textArea.print();
             } catch (Exception evt) {
                 JOptionPane.showMessageDialog(f, evt.getMessage());
             }
@@ -244,7 +308,8 @@ class Editor extends JFrame implements ActionListener {
                     }
 
                     // Set the text
-                    t.setText(sl);
+                    textArea.setText(sl);
+                    br.close();
                 } catch (Exception evt) {
                     JOptionPane.showMessageDialog(f, evt.getMessage());
                 }
@@ -253,22 +318,22 @@ class Editor extends JFrame implements ActionListener {
             else
                 JOptionPane.showMessageDialog(f, "the user cancelled the operation");
         } else if (s.equals("New")) {
-            t.setText("");
+            textArea.setText("");
         } else if (s.equals("close")) {
             f.setVisible(false);
         }
     }
 
     public String getContent(){
-        return t.getText();
+        return textArea.getText();
     }
 
     public void setContent(String content){
-        t.setText(content);
+        textArea.setText(content);
     }
 
     public void setCursorToEndOfText(){
-        t.setCaretPosition(getContent().length());
+        textArea.setCaretPosition(getContent().length());
     }
 
     // Main class

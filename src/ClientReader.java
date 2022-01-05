@@ -23,7 +23,7 @@ public class ClientReader extends Thread {
                 String content = (String)dis.readUTF();
 
                 if(this.client.getLock()){
-                    Thread.sleep(100);
+                    // Thread.sleep(100);
                     continue;
                 }
 
